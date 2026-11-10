@@ -1,0 +1,231 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Tasks | SmartTask{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'planner/css/task_list.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h1 class="fw-bold mb-2">My Tasks</h1>
+        <p class="text-muted mb-0">
+            Organize, manage and track all your tasks.
+        </p>
+    </div>
+
+    <a href="{% url 'create_task' %}"
+       class="btn btn-primary px-4 py-2">
+        <i class="bi bi-plus-lg me-1"></i>
+        New Task
+    </a>
+</div>
+
+<!-- Tasks Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-semibold mb-0">All Tasks</h5>
+
+    <span class="text-muted small">
+        {{ tasks|length }} total tasks
+    </span>
+</div>
+
+{% if tasks %}
+
+<!-- Tasks Grid -->
+<div class="row g-3">
+
+    {% for task in tasks %}
+
+    <div class="col-12 col-md-6 col-xl-4">
+
+        <div class="card task-grid-card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4 d-flex flex-column">
+
+                <!-- Priority and Status -->
+                <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+
+                    {% if task.priority == 'critical' %}
+                        <span class="badge bg-danger-subtle text-danger">Critical</span>
+                    {% elif task.priority == 'high' %}
+                        <span class="badge bg-warning-subtle text-warning-emphasis">High</span>
+                    {% elif task.priority == 'medium' %}
+                        <span class="badge bg-primary-subtle text-primary">Medium</span>
+                    {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary">Low</span>
+                    {% endif %}
+
+                    {% if task.status == 'completed' %}
+                        <span class="badge bg-success-subtle text-success">
+                            <i class="bi bi-check-circle me-1"></i>Completed
+                        </span>
+                    {% elif task.status == 'in_progress' %}
+                        <span class="badge bg-info-subtle text-info-emphasis">
+                            <i class="bi bi-arrow-repeat me-1"></i>In Progress
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary">
+                            Pending
+                        </span>
+                    {% endif %}
+
+                </div>
+
+                <!-- Task Title -->
+                <h5 class="task-grid-title fw-semibold mb-2">
+                    {{ task.title }}
+                </h5>
+
+                <!-- Description -->
+                <p class="task-grid-description text-muted small mb-3">
+                    {% if task.description %}
+                        {{ task.description|truncatechars:110 }}
+                    {% else %}
+                        No description provided.
+                    {% endif %}
+                </p>
+
+                <!-- Category -->
+                <div class="mb-3">
+                    <span class="badge bg-light text-secondary border">
+                        {{ task.get_category_display }}
+                    </span>
+                </div>
+
+                <!-- Task Information -->
+                <div class="task-grid-details mt-auto">
+
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-calendar3"></i>
+                        <span>
+                            {{ task.deadline|date:"M d, Y" }}
+                            at {{ task.deadline|date:"H:i" }}
+                        </span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-clock"></i>
+                        <span>
+                            {{ task.estimated_hours }} hours estimated
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Actions -->
+                <div class="task-grid-actions d-flex align-items-center gap-2 mt-3 pt-3">
+
+                    {% if task.status == 'pending' %}
+
+                    <!-- Start Task -->
+                    <form method="post"
+                          action="{% url 'start_task' task.id %}"
+                          class="m-0">
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-primary"
+                                title="Start task"
+                                aria-label="Start task">
+                            <i class="bi bi-play-fill"></i>
+                        </button>
+                    </form>
+
+                    {% elif task.status == 'in_progress' %}
+
+                    <!-- Pause Task -->
+                    <form method="post"
+                          action="{% url 'pause_task' task.id %}"
+                          class="m-0">
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-warning"
+                                title="Pause task"
+                                aria-label="Pause task">
+                            <i class="bi bi-pause-fill"></i>
+                        </button>
+                    </form>
+
+                    {% endif %}
+
+                    {% if task.status != 'completed' %}
+
+                    <!-- Complete Task -->
+                    <form method="post"
+                          action="{% url 'complete_task' task.id %}"
+                          class="m-0">
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-success"
+                                title="Complete task"
+                                aria-label="Complete task">
+                            <i class="bi bi-check-lg"></i>
+                        </button>
+                    </form>
+
+                    {% endif %}
+
+                    <!-- Edit Task -->
+                    <a href="{% url 'edit_task' task.id %}"
+                       class="btn btn-sm btn-outline-secondary"
+                       title="Edit task"
+                       aria-label="Edit task">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+
+                    <!-- Delete Task -->
+                    <a href="{% url 'delete_task' task.id %}"
+                       class="btn btn-sm btn-outline-danger"
+                       title="Delete task"
+                       aria-label="Delete task">
+                        <i class="bi bi-trash3"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<!-- Empty State -->
+<div class="card border-0 shadow-sm rounded-4 text-center py-5">
+    <div class="card-body">
+
+        <div class="task-empty-icon mx-auto mb-3">
+            <i class="bi bi-list-check"></i>
+        </div>
+
+        <h5 class="fw-semibold">No tasks yet</h5>
+
+        <p class="text-muted mb-4">
+            Create your first task to get started.
+        </p>
+
+        <a href="{% url 'create_task' %}"
+           class="btn btn-primary px-4">
+            <i class="bi bi-plus-lg me-1"></i>
+            Create Task
+        </a>
+
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

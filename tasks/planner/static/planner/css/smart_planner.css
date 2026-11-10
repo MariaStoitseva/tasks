@@ -1,0 +1,134 @@
+
+/* Smart Planner */
+
+/* Daily capacity */
+.planner-capacity-select {
+    width: 115px;
+}
+
+/* Progress bars */
+.planner-progress {
+    height: 8px;
+    background: #efedff;
+}
+
+.planner-progress-bar {
+    width: 0;
+    background: #7061ef;
+}
+
+.planner-week-progress {
+    height: 7px;
+    background: #efedff;
+}
+
+.planner-week-progress .progress-bar {
+    background: #7061ef;
+}
+
+.planner-week-card {
+    border-radius: 12px;
+}
+
+.planner-week-card-today {
+    background: #f7f6ff;
+}
+
+/* Recommended Task Order */
+.planner-order-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.planner-order-summary::-webkit-details-marker {
+    display: none;
+}
+
+.planner-order-summary::marker {
+    content: "";
+}
+
+.planner-order-icon,
+.planner-ai-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #efedff;
+    color: #7061ef;
+    font-size: 22px;
+}
+
+.planner-order-count {
+    background: #efedff;
+    color: #6152dc;
+    font-size: 12px;
+    padding: 8px 11px;
+}
+
+.planner-order-chevron {
+    color: #7061ef;
+    transition: transform 0.2s ease;
+}
+
+.planner-order[open] .planner-order-chevron {
+    transform: rotate(180deg);
+}
+
+.planner-order-summary:focus-visible {
+    outline: 3px solid #7061ef;
+    outline-offset: 2px;
+    border-radius: 14px;
+}
+
+/* Task Cards */
+.planner-task-card,
+.planner-recommendation-card {
+    border-radius: 14px;
+}
+
+.planner-task-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: #efedff;
+    color: #7061ef;
+    font-weight: 700;
+}
+
+.planner-recommendation-box {
+    background: #f7f6ff;
+    border-radius: 10px;
+}
+
+.planner-recommendation-label {
+    color: #6152dc;
+}
+
+.planner-ai-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .planner-order-summary {
+        gap: 10px;
+        padding: 16px !important;
+    }
+
+    .planner-order-count {
+        font-size: 11px;
+    }
+}

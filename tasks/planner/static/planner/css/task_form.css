@@ -1,0 +1,161 @@
+
+/* Task form container */
+
+.task-form-card {
+    max-width: 950px;
+    background: #ffffff;
+    border: 1px solid #e9edf4;
+    border-radius: 16px;
+    box-shadow: 0 3px 12px rgba(20, 30, 60, 0.04);
+}
+
+.task-form-card .card-body {
+    padding: 32px;
+}
+
+.task-form-card h5 {
+    color: #202a44;
+}
+
+/* Labels */
+
+.task-form-card .form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 9px;
+}
+
+/* Inputs */
+
+.task-form-card input,
+.task-form-card textarea,
+.task-form-card select {
+    display: block;
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 0.95rem;
+    color: #202a44;
+    background-color: #ffffff;
+    border: 1px solid #dfe4ed;
+    border-radius: 9px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.task-form-card textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.task-form-card input:focus,
+.task-form-card textarea:focus,
+.task-form-card select:focus {
+    outline: none;
+    border-color: #7061f3;
+    box-shadow: 0 0 0 3px rgba(112, 97, 243, 0.12);
+}
+
+/* Validation */
+
+.task-form-card .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    color: #dc3545;
+    font-size: 0.85rem;
+}
+
+/* Actions */
+
+.task-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #edf0f5;
+}
+
+.task-form-actions .btn {
+    padding: 11px 22px;
+    font-weight: 500;
+    border-radius: 9px;
+}
+
+.task-form-actions .btn-primary {
+    background-color: #7061f3;
+    border-color: #7061f3;
+}
+
+.task-form-actions .btn-primary:hover {
+    background-color: #5e50db;
+    border-color: #5e50db;
+}
+
+.task-form-actions .btn-outline-secondary {
+    color: #64748b;
+    border-color: #dfe4ed;
+}
+
+.task-form-actions .btn-outline-secondary:hover {
+    background-color: #f5f6fa;
+    color: #202a44;
+    border-color: #dfe4ed;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+    .task-form-card .card-body {
+        padding: 22px;
+    }
+
+    .task-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .task-form-actions .btn {
+        width: 100%;
+    }
+}
+
+/* =====================================
+   DELETE TASK
+===================================== */
+
+.delete-warning-icon {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fee2e2;
+    color: #dc3545;
+    border-radius: 20px;
+    font-size: 30px;
+}
+
+.delete-task-info {
+    background-color: #f8f9fc;
+    border: 1px solid #e9edf5;
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.delete-task-info h5 {
+    color: #202a44;
+    overflow-wrap: anywhere;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    border-radius: 10px;
+    padding: 11px 22px;
+    font-weight: 600;
+}
+
+.btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #bb2d3b;
+}

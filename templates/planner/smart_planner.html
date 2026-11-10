@@ -1,0 +1,528 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Smart Planner | SmartTask{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'planner/css/smart_planner.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h1 class="fw-bold mb-1">Smart Planner</h1>
+    <p class="text-muted mb-0">
+        Plan smarter and focus on what matters most.
+    </p>
+</div>
+
+<!-- Work Plan Header -->
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
+    <div>
+        <h4 class="fw-bold mb-1">Work Plan</h4>
+        <p class="text-muted mb-0">
+            Your personalized schedule, based on
+            {{ daily_capacity|floatformat:0 }} working hours per day.
+        </p>
+    </div>
+
+    <div class="d-flex align-items-center flex-wrap gap-3">
+
+        <!-- Daily Capacity -->
+        <form method="get" class="d-flex align-items-center gap-2">
+            <label for="dailyCapacity" class="text-muted small text-nowrap">
+                Daily capacity:
+            </label>
+
+            <select id="dailyCapacity"
+                    name="capacity"
+                    class="form-select form-select-sm planner-capacity-select"
+                    onchange="this.form.submit()">
+                {% for hours in capacity_options %}
+                    <option value="{{ hours }}"
+                        {% if daily_capacity == hours %}selected{% endif %}>
+                        {{ hours }} hours
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <!-- Day / Week Toggle -->
+        <div class="btn-group" role="group" aria-label="Plan view">
+            <button type="button" id="dayViewBtn"
+                    class="btn btn-primary" aria-pressed="true">
+                Day
+            </button>
+            <button type="button" id="weekViewBtn"
+                    class="btn btn-outline-primary" aria-pressed="false">
+                Week
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Work Plan -->
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" id="prevPeriod"
+                        class="btn btn-primary btn-sm"
+                        aria-label="Previous period">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <button type="button" id="todayPeriod"
+                        class="btn btn-outline-primary btn-sm">
+                    Today
+                </button>
+
+                <button type="button" id="nextPeriod"
+                        class="btn btn-primary btn-sm"
+                        aria-label="Next period">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+
+            <h5 id="selectedPeriod" class="fw-semibold mb-0"></h5>
+        </div>
+
+        <!-- Day View -->
+        <div id="dayView">
+            <div id="dailyTasks"></div>
+
+            <div class="mt-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Daily workload</span>
+                    <span id="dailyHours" class="text-muted small"></span>
+                </div>
+
+                <div class="progress planner-progress">
+                    <div id="dailyProgress"
+                         class="progress-bar planner-progress-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week View -->
+        <div id="weekView" class="d-none">
+            <div id="weeklyTasks" class="row g-3"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Recommended Task Order -->
+<details class="card border-0 shadow-sm rounded-4 mb-4 planner-order">
+    <summary class="p-4 planner-order-summary">
+        <span class="planner-order-icon">
+            <i class="bi bi-list-ol"></i>
+        </span>
+
+        <span class="flex-grow-1">
+            <span class="d-block fw-bold text-dark">
+                Recommended Task Order
+            </span>
+            <span class="d-block text-muted small mt-1">
+                Tasks ranked by priority and deadline
+            </span>
+        </span>
+
+        <span class="badge rounded-pill planner-order-count">
+            {{ schedule|length }} tasks
+        </span>
+
+        <i class="bi bi-chevron-down planner-order-chevron"
+           aria-hidden="true"></i>
+    </summary>
+
+    <div class="px-4 pb-4">
+        {% if schedule %}
+            {% for task in schedule %}
+                <div class="card border shadow-none mb-3 planner-task-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between flex-wrap gap-3 mb-3">
+                            <div class="d-flex align-items-start gap-3 flex-grow-1">
+                                <div class="planner-task-number">
+                                    {{ forloop.counter }}
+                                </div>
+
+                                <div>
+                                    <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+                                        <h5 class="fw-semibold mb-0">
+                                            {{ task.title }}
+                                        </h5>
+
+                                        {% if task.priority == 'critical' %}
+                                            <span class="badge bg-danger-subtle text-danger">Critical</span>
+                                        {% elif task.priority == 'high' %}
+                                            <span class="badge bg-warning-subtle text-warning-emphasis">High</span>
+                                        {% elif task.priority == 'medium' %}
+                                            <span class="badge bg-primary-subtle text-primary">Medium</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary-subtle text-secondary">Low</span>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if task.description %}
+                                        <p class="text-muted mb-2">
+                                            {{ task.description|truncatechars:180 }}
+                                        </p>
+                                    {% endif %}
+
+                                    <span class="badge bg-light text-secondary border">
+                                        {{ task.get_category_display }}
+                                    </span>
+
+                                    <span class="text-muted small ms-2">
+                                        Estimated: {{ task.estimated_hours }} hours
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="text-md-end">
+                                <div class="text-muted small mb-1">Deadline</div>
+                                <div class="fw-semibold">
+                                    {{ task.deadline|date:"M d, Y" }}
+                                </div>
+                                <div class="text-muted small">
+                                    {{ task.deadline|date:"H:i" }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 planner-recommendation-box">
+                            <div class="fw-semibold mb-1 planner-recommendation-label">
+                                Recommended Start
+                            </div>
+                            <div class="fw-semibold mb-1">
+                                {{ task.recommended_start }}
+                            </div>
+                            <p class="text-muted small mb-0">
+                                {{ task.recommendation_reason }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-muted py-3">
+                All caught up! You don't have any active tasks.
+            </div>
+        {% endif %}
+    </div>
+</details>
+
+<!-- AI Recommendations -->
+<div class="mt-5 mb-4">
+    <h2 class="fw-bold mb-1">AI Recommendations</h2>
+    <p class="text-muted mb-0">
+        Smart suggestions based on your tasks, deadlines and workload.
+    </p>
+</div>
+
+<div class="row g-3">
+    {% for recommendation in recommendations %}
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 planner-recommendation-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="planner-ai-icon">✦</div>
+
+                        <div>
+                            <h5 class="fw-semibold mb-2">
+                                {{ recommendation.title }}
+                            </h5>
+                            <p class="text-muted mb-0">
+                                {{ recommendation.message }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 text-muted">
+                    No recommendations available.
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ daily_plan|json_script:"daily-plan-data" }}
+{{ daily_capacity|json_script:"daily-capacity-data" }}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    const dailyPlan = JSON.parse(
+        document.getElementById("daily-plan-data").textContent
+    );
+
+    const dailyCapacity = Number(
+        JSON.parse(
+            document.getElementById("daily-capacity-data").textContent
+        )
+    );
+
+    const todayString = new Date().toLocaleDateString("en-CA");
+    const planByDate = new Map(
+        dailyPlan.map(day => [day.date, day])
+    );
+
+    const dayBtn = document.getElementById("dayViewBtn");
+    const weekBtn = document.getElementById("weekViewBtn");
+    const dayView = document.getElementById("dayView");
+    const weekView = document.getElementById("weekView");
+
+    let mode = "day";
+    let currentDate = new Date();
+
+    function parseDate(value) {
+        const [year, month, day] = value.split("-").map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    function formatDate(date) {
+        return [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0")
+        ].join("-");
+    }
+
+    function addDays(date, count) {
+        const result = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate()
+        );
+
+        result.setDate(result.getDate() + count);
+        return result;
+    }
+
+    function weekStart(date) {
+        const mondayOffset = (date.getDay() + 6) % 7;
+        return addDays(date, -mondayOffset);
+    }
+
+    function formatLong(date) {
+        return date.toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        });
+    }
+
+    function formatShort(date) {
+        return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric"
+        });
+    }
+
+    function makeTaskRow(task) {
+        const row = document.createElement("div");
+        row.className =
+            "d-flex justify-content-between align-items-center gap-3 py-2";
+
+        const title = document.createElement("span");
+        title.className = "fw-medium";
+        title.textContent = "●  " + task.title;
+
+        const hours = document.createElement("span");
+        hours.className = "text-muted text-nowrap";
+        hours.textContent = task.hours + " h";
+
+        row.append(title, hours);
+        return row;
+    }
+
+    function makeProgress(total) {
+        const progress = document.createElement("div");
+        progress.className = "progress mt-3 planner-week-progress";
+
+        const bar = document.createElement("div");
+        bar.className = "progress-bar";
+
+        const percentage = dailyCapacity > 0
+            ? Math.min(total / dailyCapacity * 100, 100)
+            : 0;
+
+        bar.style.width = percentage + "%";
+        progress.appendChild(bar);
+
+        return progress;
+    }
+
+    function renderDay() {
+        document.getElementById("selectedPeriod").textContent =
+            formatLong(currentDate);
+
+        const day = planByDate.get(formatDate(currentDate));
+        const container = document.getElementById("dailyTasks");
+
+        container.replaceChildren();
+
+        let total = 0;
+
+        if (day && day.tasks && day.tasks.length) {
+            day.tasks.forEach(task => {
+                container.appendChild(makeTaskRow(task));
+            });
+
+            total = Number(day.total_hours) || 0;
+        } else {
+            const empty = document.createElement("p");
+            empty.className = "text-muted mb-0";
+            empty.textContent = "No tasks scheduled for this day.";
+            container.appendChild(empty);
+        }
+
+        document.getElementById("dailyHours").textContent =
+            total.toFixed(1) + " / " + dailyCapacity + " hours";
+
+        const percentage = dailyCapacity > 0
+            ? Math.min(total / dailyCapacity * 100, 100)
+            : 0;
+
+        document.getElementById("dailyProgress").style.width =
+            percentage + "%";
+    }
+
+    function renderWeek() {
+        const monday = weekStart(currentDate);
+        const sunday = addDays(monday, 6);
+
+        const label =
+            formatShort(monday) + " – " +
+            formatShort(sunday) + ", " +
+            sunday.getFullYear();
+
+        document.getElementById("selectedPeriod").textContent = label;
+
+        const container = document.getElementById("weeklyTasks");
+        container.replaceChildren();
+
+        for (let i = 0; i < 7; i++) {
+            const date = addDays(monday, i);
+            const day = planByDate.get(formatDate(date));
+
+            const total = day
+                ? Number(day.total_hours) || 0
+                : 0;
+
+            const col = document.createElement("div");
+            col.className = "col-md-6 col-xl-4";
+
+            const card = document.createElement("div");
+            card.className =
+                "border p-3 h-100 planner-week-card";
+
+            if (formatDate(date) === todayString) {
+                card.classList.add("planner-week-card-today");
+            }
+
+            const header = document.createElement("div");
+            header.className =
+                "d-flex justify-content-between align-items-center gap-2 mb-2";
+
+            const heading = document.createElement("strong");
+            heading.textContent = date.toLocaleDateString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric"
+            });
+
+            const hours = document.createElement("span");
+            hours.className = "small text-muted text-nowrap";
+            hours.textContent =
+                total.toFixed(1) + " / " + dailyCapacity + " h";
+
+            header.append(heading, hours);
+            card.appendChild(header);
+
+            if (day && day.tasks && day.tasks.length) {
+                day.tasks.forEach(task => {
+                    card.appendChild(makeTaskRow(task));
+                });
+            } else {
+                const empty = document.createElement("p");
+                empty.className = "text-muted small mb-0 py-2";
+                empty.textContent = "No tasks scheduled.";
+                card.appendChild(empty);
+            }
+
+            card.appendChild(makeProgress(total));
+            col.appendChild(card);
+            container.appendChild(col);
+        }
+    }
+
+    function render() {
+        dayView.classList.toggle("d-none", mode !== "day");
+        weekView.classList.toggle("d-none", mode !== "week");
+
+        dayBtn.className =
+            "btn " + (mode === "day" ? "btn-primary" : "btn-outline-primary");
+
+        weekBtn.className =
+            "btn " + (mode === "week" ? "btn-primary" : "btn-outline-primary");
+
+        dayBtn.setAttribute("aria-pressed", String(mode === "day"));
+        weekBtn.setAttribute("aria-pressed", String(mode === "week"));
+
+        if (mode === "day") {
+            renderDay();
+        } else {
+            renderWeek();
+        }
+    }
+
+    dayBtn.addEventListener("click", () => {
+        mode = "day";
+        render();
+    });
+
+    weekBtn.addEventListener("click", () => {
+        mode = "week";
+        render();
+    });
+
+    document.getElementById("prevPeriod").addEventListener("click", () => {
+        currentDate = addDays(
+            currentDate,
+            mode === "day" ? -1 : -7
+        );
+        render();
+    });
+
+    document.getElementById("nextPeriod").addEventListener("click", () => {
+        currentDate = addDays(
+            currentDate,
+            mode === "day" ? 1 : 7
+        );
+        render();
+    });
+
+    document.getElementById("todayPeriod").addEventListener("click", () => {
+        currentDate = parseDate(todayString);
+        render();
+    });
+
+    render();
+});
+
+</script>
+{% endblock %}
+

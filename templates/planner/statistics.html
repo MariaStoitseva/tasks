@@ -1,0 +1,233 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Statistics | SmartTask{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'planner/css/statistics.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h1 class="fw-bold mb-2">Statistics</h1>
+    <p class="text-muted mb-0">
+        Track your productivity and task progress.
+    </p>
+</div>
+
+<!-- Overview -->
+<div class="row g-4 mb-4">
+
+    <div class="col-md-4">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="stats-icon purple">☷</div>
+                <p class="stats-label">Total Tasks</p>
+                <h2 class="stats-value">{{ total_tasks }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="stats-icon green">✓</div>
+                <p class="stats-label">Completed</p>
+                <h2 class="stats-value">{{ completed_tasks }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="stats-icon orange">◷</div>
+                <p class="stats-label">Pending</p>
+                <h2 class="stats-value">{{ pending_tasks }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stats-label">Completion Rate</p>
+                        <h2 class="stats-value">{{ completion_rate }}%</h2>
+                    </div>
+                    <div class="stats-icon purple">↗</div>
+                </div>
+
+                <div class="progress stats-progress mt-3">
+                    <div class="progress-bar"
+                         role="progressbar"
+                         style="width: {{ completion_rate }}%;"
+                         aria-valuenow="{{ completion_rate }}"
+                         aria-valuemin="0"
+                         aria-valuemax="100">
+                    </div>
+                </div>
+                <p class="text-muted small mt-3 mb-0">
+                    {{ completed_tasks }} out of {{ total_tasks }} tasks completed
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card stats-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stats-label">Overdue Tasks</p>
+                        <h2 class="stats-value">{{ overdue_tasks }}</h2>
+                        <p class="text-muted small mt-2 mb-0">
+                            Tasks past their deadline
+                        </p>
+                    </div>
+                    <div class="stats-icon red">!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Charts -->
+<div class="row g-4">
+
+    <div class="col-lg-6">
+        <div class="card chart-card h-100">
+            <div class="card-body">
+                <h5 class="fw-semibold mb-1">Task Progress</h5>
+                <p class="text-muted small mb-4">
+                    Task distribution by status
+                </p>
+
+                <div class="chart-container">
+                    <canvas id="taskProgressChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card chart-card h-100">
+            <div class="card-body">
+                <h5 class="fw-semibold mb-1">Tasks by Category</h5>
+                <p class="text-muted small mb-4">
+                    Distribution of tasks across categories
+                </p>
+
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{{ category_labels|json_script:"category-labels" }}
+{{ category_data|json_script:"category-data" }}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const progressCtx = document.getElementById('taskProgressChart');
+
+    new Chart(progressCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ["Completed", "Pending", "In Progress"],
+            datasets: [{
+                data: [
+                    {{ completed_tasks|default:0 }},
+                    {{ pending_tasks|default:0 }},
+                    {{ in_progress_tasks|default:0 }}
+                ],
+                backgroundColor: [
+                    "#7061ef", // Completed
+                    "#e7e4ff", // Pending
+                    "#f59e0b"  // In Progress
+                ],
+                borderWidth: 0,
+                hoverOffset: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        color: '#64748b',
+                        font: { size: 13 }
+                    }
+                }
+            }
+        }
+    });
+
+    const categoryLabels = JSON.parse(
+        document.getElementById('category-labels').textContent
+    );
+
+    const categoryData = JSON.parse(
+        document.getElementById('category-data').textContent
+    );
+
+    const categoryCtx = document.getElementById('categoryChart');
+
+    new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+            labels: categoryLabels,
+            datasets: [{
+                label: 'Tasks',
+                data: categoryData,
+                backgroundColor: '#7061f3',
+                borderRadius: 7,
+                maxBarThickness: 48
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#64748b' }
+                },
+                y: {
+                    beginAtZero: true,
+                    border: { display: false },
+                    grid: { color: '#edf0f5' },
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0,
+                        color: '#64748b'
+                    }
+                }
+            }
+        }
+    });
+
+});
+</script>
+{% endblock %}

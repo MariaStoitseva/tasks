@@ -1,0 +1,113 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}New Task | SmartTask{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'planner/css/task_form.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h1 class="fw-bold mb-2">Create New Task</h1>
+    <p class="text-muted mb-0">
+        Add a new task and organize your work.
+    </p>
+</div>
+
+<div class="card task-form-card">
+    <div class="card-body">
+
+        <div class="mb-4">
+            <h5 class="fw-semibold mb-1">Task Details</h5>
+            <p class="text-muted small mb-0">
+                Fill in the information below to create your task.
+            </p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="row g-4">
+
+                <!-- Title -->
+                <div class="col-12">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">
+                        Task Title
+                    </label>
+                    {{ form.title }}
+                    {{ form.title.errors }}
+                </div>
+
+                <!-- Description -->
+                <div class="col-12">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                        Description
+                    </label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+
+                <!-- Deadline -->
+                <div class="col-md-6">
+                    <label for="{{ form.deadline.id_for_label }}" class="form-label">
+                        Deadline
+                    </label>
+                    {{ form.deadline }}
+                    {{ form.deadline.errors }}
+                </div>
+
+                <!-- Estimated Hours -->
+                <div class="col-md-6">
+                    <label for="{{ form.estimated_hours.id_for_label }}" class="form-label">
+                        Estimated Hours
+                    </label>
+                    {{ form.estimated_hours }}
+                    {{ form.estimated_hours.errors }}
+                </div>
+
+                <!-- Category -->
+                <div class="col-md-6">
+                    <label for="{{ form.category.id_for_label }}" class="form-label">
+                        Category
+                    </label>
+                    {{ form.category }}
+                    {{ form.category.errors }}
+                </div>
+
+                <!-- Importance -->
+                <div class="col-md-6">
+                    <label for="{{ form.importance.id_for_label }}" class="form-label">
+                        Importance
+                    </label>
+                    {{ form.importance }}
+                    {{ form.importance.errors }}
+                </div>
+
+            </div>
+
+            <div class="task-form-actions">
+                <a href="{% url 'task_list' %}"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    + Create Task
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

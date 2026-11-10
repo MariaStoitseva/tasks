@@ -1,0 +1,102 @@
+
+/* =====================================
+   MY TASKS - GRID LAYOUT
+===================================== */
+
+.task-grid-card {
+    border-radius: 16px;
+    background-color: #ffffff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.task-grid-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(32, 42, 68, 0.09) !important;
+}
+
+/* Task Title */
+
+.task-grid-title {
+    font-size: 1.05rem;
+    color: #202a44;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+/* Description */
+
+.task-grid-description {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    min-height: 42px;
+}
+
+/* Task Details */
+
+.task-grid-details {
+    border-top: 1px solid #edf0f5;
+    padding-top: 15px;
+    color: #64748b;
+    font-size: 0.83rem;
+}
+
+.task-grid-details i {
+    color: #7061f3;
+    font-size: 0.95rem;
+}
+
+/* Badges */
+
+.task-grid-card .badge {
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 7px;
+}
+
+/* Action Buttons */
+
+.task-grid-actions {
+    border-top: 1px solid #edf0f5;
+}
+
+.task-grid-actions .btn {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    padding: 0;
+}
+
+.task-grid-actions .btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Empty State */
+
+.task-empty-icon {
+    width: 64px;
+    height: 64px;
+    background-color: #efedff;
+    color: #7061f3;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+/* Responsive */
+
+@media (max-width: 767px) {
+    .task-grid-card .card-body {
+        padding: 20px !important;
+    }
+
+    .task-grid-description {
+        min-height: auto;
+    }
+}

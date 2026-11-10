@@ -1,0 +1,106 @@
+
+/* Statistics cards */
+
+.stats-card,
+.chart-card {
+    background: #ffffff;
+    border: 1px solid #e9edf4;
+    border-radius: 16px;
+    box-shadow: 0 3px 10px rgba(20, 30, 60, 0.035);
+}
+
+.stats-card .card-body,
+.chart-card .card-body {
+    padding: 26px;
+}
+
+.stats-label {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.stats-value {
+    color: #202a44;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+/* Icons */
+
+.stats-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.stats-icon.purple {
+    background: #efedff;
+    color: #7061f3;
+}
+
+.stats-icon.green {
+    background: #e5f7ed;
+    color: #16a36a;
+}
+
+.stats-icon.orange {
+    background: #fff3dc;
+    color: #e59a12;
+}
+
+.stats-icon.red {
+    background: #ffeded;
+    color: #ef4444;
+}
+
+/* Completion progress */
+
+.stats-progress {
+    height: 10px;
+    border-radius: 20px;
+    background: #eeedf5;
+    overflow: hidden;
+}
+
+.stats-progress .progress-bar {
+    background: #7061f3;
+    border-radius: 20px;
+}
+
+/* Charts */
+
+.chart-card h5 {
+    color: #202a44;
+    font-size: 1.1rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 310px;
+    width: 100%;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+    .stats-card .card-body,
+    .chart-card .card-body {
+        padding: 20px;
+    }
+
+    .stats-value {
+        font-size: 1.75rem;
+    }
+
+    .chart-container {
+        height: 260px;
+    }
+}
