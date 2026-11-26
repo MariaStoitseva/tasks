@@ -1,5 +1,12 @@
 # SmartTask – Intelligent Task Management System
 
+## Live Demo
+
+[Open SmartTask](https://smarttask-gmxq.onrender.com)
+
+Note: The application is hosted on Render's free plan.
+The first request may take up to a minute due to cold start.
+
 SmartTask is a web-based task management application developed as a university course project using Django and PostgreSQL.
 
 The application helps users organize tasks, manage deadlines, track progress, and create personalized work schedules through a rule-based Smart Planner.
